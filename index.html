@@ -1,0 +1,41 @@
+<HTML>
+	<HEAD>
+		<TITLE>Kitchen</TITLE>
+	</HEAD>
+
+	<BODY>
+		<script TYPE="TEXT/JAVASCRIPT" SRC="http://d3js.org/d3.v3.min.js"></script>
+		<script>
+			d3.csv("timedata.csv", function(csv) {
+				var nested_data = d3.nest()
+									.key(function(d) {return d.departmentID;})
+										.sortKeys(d3.ascending)
+									.key(function(d) {return d.employee;})
+										.sortKeys(d3.ascending)
+									.key(function(d) {return d.client;})
+										.sortKeys(d3.ascending)
+									.entries(csv);
+
+				console.log(nested_data);
+
+				d3.select("body")
+					.append("select")
+					.selectAll("option")
+					.data(nested_data)
+					.enter()
+					.append("option")
+					.text(function(d, i) {return d.key;});
+				
+
+				d3.select("body").selectAll("div")
+					.data(nested_data)
+					.enter()
+					.append("div")
+					.text(function(d) {return d.key});
+				
+			});
+				
+
+		</script>
+	</BODY>
+</HTML>
