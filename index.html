@@ -8,13 +8,13 @@
 		<script>
 			d3.csv("timedata.csv", function(csv) {
 				var nested_data = d3.nest()
-									.key(function(d) {return d.departmentID;})
-										.sortKeys(d3.ascending)
-									.key(function(d) {return d.employee;})
-										.sortKeys(d3.ascending)
-									.key(function(d) {return d.client;})
-										.sortKeys(d3.ascending)
-									.entries(csv);
+					.key(function(d) {return d.departmentID;})
+						.sortKeys(d3.ascending)
+					.key(function(d) {return d.employee;})
+						.sortKeys(d3.ascending)
+					.key(function(d) {return d.client;})
+						.sortKeys(d3.ascending)
+					.entries(csv);
 
 				console.log(nested_data);
 
