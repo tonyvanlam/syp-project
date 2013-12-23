@@ -1,0 +1,46 @@
+/* Tony's D3 Project Style Sheet */
+
+body {
+	/*Gradient Background*/
+	background: #aeb3ae; /* Old browsers */
+	background: -moz-linear-gradient(-45deg,  #aeb3ae 0%, #868294 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right bottom, color-stop(0%,#aeb3ae), color-stop(100%,#868294)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(-45deg,  #aeb3ae 0%,#868294 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(-45deg,  #aeb3ae 0%,#868294 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(-45deg,  #aeb3ae 0%,#868294 100%); /* IE10+ */
+	background: linear-gradient(135deg,  #aeb3ae 0%,#868294 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#aeb3ae', endColorstr='#868294',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+
+div.content{
+	font-family:'Varela Round', sans-serif;
+	width:450px;
+	margin:50px auto;
+	padding:30px;
+	background:#ffffff;
+	-webkit-border-radius: 25px;
+	border-radius: 25px;
+	color:#514154;
+}
+
+h3 {
+	font-size:17px;
+	font-weight: normal;
+	margin: 0;
+	padding:0 ;
+}
+
+ul {
+	margin:15px 0 0;
+	padding:0;
+	list-style: none;
+	font-size:14px;
+	-moz-column-count:2; /* Firefox */
+	-webkit-column-count:2; /* Safari and Chrome */
+	column-count:2;
+}
+
+li {
+	margin:0 0 15px;
+	padding:0;
+}
