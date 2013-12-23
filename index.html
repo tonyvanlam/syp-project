@@ -1,12 +1,22 @@
 <HTML>
 	<HEAD>
+
+		<!-- added style sheets 1) Google Web Font Varela Round. 2) Basic styles for content display --> 
+		<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>	
+		<link href='style.css' rel='stylesheet' type='text/css'>	
+
 		<TITLE>Kitchen</TITLE>
 	</HEAD>
 
 	<BODY>
 
-		<!-- jQuery Library -->
-		<script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+		<!-- added a main div to place generated content in for easier styling -->
+		<div id="main" class="content">
+			
+		</div>
+
+		<!-- jQuery Library (Not needed yet but maybe useful -->
+		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
 
 		<script TYPE="TEXT/JAVASCRIPT" SRC="http://d3js.org/d3.v3.min.js"></script>
 		
@@ -28,13 +38,13 @@
 				//Display csv object in developer console.
 				console.log(nested_data);
 
-				//Create a header/label for a dropdown menu
-				d3.select("body")
+				//Create a header/label for a dropdown menu inside main content div.
+				d3.select("div.content")
 					.append("h3")
 					.text("Please select a department");
 
-				//Create a dropdown menu and populate with departments from csv object.
-				d3.select("body")
+				//Create a dropdown menu and populate with departments from csv object inside main content div.
+				d3.select("div.content")
 					.append("select")
 					.selectAll("option")
 					.data(nested_data)
@@ -53,16 +63,16 @@
   				    	//variable that stores the value of the dropdown option selected   
 					    var departmentIndex = this.options[this.selectedIndex].value;
 					
-					    //removes previous divs to clear previously displayed information selection 
-					    d3.select("div")
+					    //removes previous divs to clear previously displayed information selection inside main content div
+					    d3.select("div.content div")
 					    	.remove();
 
-						//creates a div to store listed data
-					    d3.select("body")
+						//creates a div to store listed data inside main content div
+					    d3.select("div.content")
 							.append("div");
 
-						//creates an unordered list and populates it with members of each department
-						d3.select("div")
+						//creates an unordered list and populates it with members of each department inside main content div
+						d3.select("div.content div")
 							.append("ul")
 							.selectAll("li")
 							.data(nested_data[dropdownIndex].values) //the scope of the data that .enter() traverses 
