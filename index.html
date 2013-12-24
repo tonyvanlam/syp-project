@@ -1,19 +1,20 @@
-<HTML>
-	<HEAD>
+<html>
+	<head>
 
 		<!-- added style sheets 1) Google Web Font Varela Round. 2) Basic styles for content display --> 
 		<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>	
 		<link href='style.css' rel='stylesheet' type='text/css'>	
 
-		<TITLE>Kitchen</TITLE>
-	</HEAD>
+		<title>Kitchen</title>
+	</head>
 
-	<BODY>
+	<body>
 
 		<!-- added a main div to place generated content in for easier styling -->
 		<div id="main" class="content">
 			
 		</div>
+
 
 		<!-- jQuery Library (Not needed yet but maybe useful -->
 		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
@@ -53,29 +54,40 @@
 					.text(function(d, i) {return d.key;});
 			
 
+				//Add a neutral dropdown option to force user to pick
+				d3.select("div.content select")
+					.insert("option","option")
+					.text("...");
+
+
 				//Trigger: On change of dropdown selection, load corresponding data
 				d3.select('select')
-				    .on("change", function() {
+					.on("change", function() {
 
-				    	//variable that stores the index of the dropdown option selected 
-				    	var dropdownIndex = this.selectedIndex;
+			    	//variable that stores the index of the dropdown option selected
+			    	var dropdownIndex = this.selectedIndex;
+			    	var dropdownIndexAdjusted = dropdownIndex-1; //subtract one from dropdownIndex to compensate for null value 
 
-  				    	//variable that stores the value of the dropdown option selected   
-					    var departmentIndex = this.options[this.selectedIndex].value;
-					
-					    //removes previous divs to clear previously displayed information selection inside main content div
-					    d3.select("div.content div")
-					    	.remove();
+				    //variable that stores the value of the dropdown option selected   
+				    var departmentIndex = this.options[this.selectedIndex].value;
+				
+				    //removes previous divs to clear previously displayed information selection inside main content div
+				    d3.select("div.content div")
+				    	.remove();
 
-						//creates a div to store listed data inside main content div
-					    d3.select("div.content")
-							.append("div");
+					//creates a div to store listed data inside main content div
+				    d3.select("div.content")
+						.append("div");
+
+
+					//check to make sure null option isn't selected
+					if (dropdownIndex > 0){
 
 						//creates an unordered list and populates it with members of each department inside main content div
 						d3.select("div.content div")
 							.append("ul")
 							.selectAll("li")
-							.data(nested_data[dropdownIndex].values) //the scope of the data that .enter() traverses 
+							.data(nested_data[dropdownIndexAdjusted].values) 
 							.enter()
 							.append("li")
 							.text(function(d,i) {
@@ -84,11 +96,15 @@
 								
 							});
 
-					});
+					} //end if statement
 
-			});
+
+				}); //end dropdown change trigger
+
+
+			}); //end csv loading
 				
 
 		</script>
-	</BODY>
-</HTML>
+	</body>
+</html>
