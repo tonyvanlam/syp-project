@@ -25,15 +25,18 @@
 
 			//Load a csv file and generate a tree of data.
 			d3.csv("timedata.csv", function(csv) {
+			
+				var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
 				
 				//Populate a csv object from csv file
 				var nested_data = d3.nest()
-					.key(function(d) {return d.departmentID;})
-						.sortKeys(d3.ascending)
+					.key(function(d) {return d.deptName;})
+						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
 					.key(function(d) {return d.employee;})
 						.sortKeys(d3.ascending)
 					.key(function(d) {return d.client;})
 						.sortKeys(d3.ascending)
+                    .rollup(function(hours) { return {"hours": d3.sum(hours, function(d) {return parseFloat(d.hours);})} })
 					.entries(csv);
 
 				//Display csv object in developer console.
