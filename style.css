@@ -15,7 +15,7 @@ body {
 div.content{
 	font-family:'Varela Round', sans-serif;
 	width:450px;
-	margin:50px auto;
+	margin:50px;
 	padding:30px;
 	background:#ffffff;
 	-webkit-border-radius: 25px;
@@ -26,8 +26,12 @@ div.content{
 h3 {
 	font-size:17px;
 	font-weight: normal;
-	margin: 0;
+	margin: 0 0 5px;
 	padding:0 ;
+}
+
+select{
+	margin-bottom: 15px;
 }
 
 ul {
