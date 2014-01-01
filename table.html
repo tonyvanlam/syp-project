@@ -34,9 +34,9 @@
 					.key(function(d) {return d.employee;})
 						.sortKeys(d3.ascending)
 					.entries(csv);
-
+					
 				//Display csv object in developer console.
-				console.log(nested_data);
+				//console.log(nested_data);
 
 				//Create a header/label for a dropdown menu inside main content div.
 				d3.select("div.content")
@@ -91,33 +91,56 @@
 							.data(nested_data[dropdownIndex].values) //the scope of the data that .enter() traverses 
 							.enter()
 							.append("tr")
-
+							.attr("class", "id")
 							.append("td")
-							.text(function(d) {return d.key;})
+							.text(function(d) {return d.key;});
+							
+	/*						d3.select("tr.id")
+								.append("td")
+								.data(nested_data[dropdownIndex].values)
+								.append("td")
+								.text(function(d) {return d.key;});
+	*/
 						//hours column
-							.append("td")
-							.text(function(d) {
-								var hrs = "";
-								
-								d.values.forEach(function(h) {
-									var sum = d3.sum(d.values, function(x) {return x.hours;});
-									hrs = sum;
-								})
-							return hrs;
-							})
-						//utiliztion column
-							.append("td")
-							.text(function(d) {
-								var formatPercent = d3.format(".0%");
-								var utlz = ("")
-																	
-								d.values.forEach(function(h) {
-									var sum = d3.sum(d.values, function(x) {return x.hours;});
-									var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
-									utlz = Math.round(sum/bsl*100)+"%";
+							d3.select("tbody")
+								.selectAll("tr")
+								//.append("td")
+								.data(nested_data[dropdownIndex].values)
+								.append("td")
+								.text(function(d) {
+									var hrs = "";
+									
+									d.values.forEach(function(h) {
+										var sum = d3.sum(d.values, function(x) {return x.hours;});
+										hrs = sum;
 									})
-							return utlz;
-							});
+									return hrs;
+								})
+						//utiliztion column
+							d3.select("tbody")
+								.selectAll("tr")
+								.data(nested_data[dropdownIndex].values)
+								.append("td")
+								.text(function(d) {
+									var formatPercent = d3.format(".0%");
+									var utlz = ("")
+																		
+									d.values.forEach(function(h) {
+										
+										if(h.billable == "TRUE") {
+											h.billable_hrs = h.hours;
+										}
+										
+										var sum = d3.sum(d.values, function(x) {return x.billable_hrs;});
+										var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+										
+										utlz = Math.round(sum/bsl*100)+"%";
+										
+										console.log(nested_data);
+										
+										})
+									return utlz;
+								});
 					});
 
 			});
