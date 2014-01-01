@@ -30,8 +30,12 @@ h3 {
 	padding:0 ;
 }
 
-select{
-	margin-bottom: 15px;
+select.department{
+	margin-bottom: 40px;
+}
+
+select.employee{
+	margin-bottom: 100px;
 }
 
 ul {
@@ -47,4 +51,16 @@ ul {
 li {
 	margin:0 0 15px;
 	padding:0;
+}
+
+div.pie-chart{
+	margin:25px;
+	padding:30px;
+	-webkit-border-radius: 25px;
+	border-radius: 25px;
+}
+
+svg{
+	margin:25px;
+	border:50px;
 }
