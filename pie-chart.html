@@ -27,18 +27,29 @@
 			
 				var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
 				
-				//Populate a csv object from csv file
+				//Populate a csv object from csv file (for table)
 				var nested_data = d3.nest()
 					.key(function(d) {return d.deptName;})
 						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
 					.key(function(d) {return d.employee;})
 						.sortKeys(d3.ascending)
 					.entries(csv);
+				
+				//Populate a csv object from csv file (for pie chart)	
+				var nested_data2 = d3.nest()
+					.key(function(d) {return d.deptName;})
+						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+					.key(function(d) {return d.employee;})
+						.sortKeys(d3.ascending)
+					.key(function(d) {return d.client;})
+						.sortKeys(d3.ascending)
+				//	.rollup(function(h) {return {"hours": d3.sum(h, function(d) {return parseFloat(d.hours);})} })
+					.entries(csv);
 					
 				//Display csv object in developer console.
-				console.log(nested_data);
+				console.log(nested_data2);
 
-				//Create a header/label for a dropdown menu inside main content div.
+				//Create a header/label for the department dropdown menu inside main content div.
 				d3.select("div.content")
 					.append("h3")
 					.attr("class", "department")
@@ -49,7 +60,7 @@
 					.append("select")
 					.attr("class", "department")
 					.selectAll("option")
-					.data(nested_data)
+					.data(nested_data2)
 					.enter()
 					.append("option")
 					.text(function(d, i) {return d.key;});
@@ -61,7 +72,7 @@
 
 				    	//variable that stores the index of the dropdown option selected 
 						var dropdownIndex = this.selectedIndex;
-  						
+
 					    //removes previous divs to clear previously displayed information selection inside main content div
 					    d3.select("h3.employee")
 					    	.remove();
@@ -70,19 +81,18 @@
 					    d3.select("div.pie-chart")
 					    	.remove();
 					    			    
-						//creates a div to store listed data inside main content div
+						//Create a header/label for the employee dropdown menu inside main content div.
 						d3.select("div.content")
 							.append("h3")
 							.attr("class", "employee")
 							.text("Please select an employee");
 						
-					    d3.select("div.content")
+						//Create a dropdown menu for populate with employee names based on department selection
+						d3.select("div.content")
 							.append("select")
-							.attr("class", "employee");
-						
-						d3.select("select.employee")
+							.attr("class", "employee")
 							.selectAll("option")
-							.data(nested_data[dropdownIndex].values)
+							.data(nested_data2[dropdownIndex].values)
 							.enter()
 							.append("option")
 							.text(function(d, i) {return d.key;});
@@ -103,19 +113,49 @@
 								var arc = d3.svg.arc()
 												.outerRadius(outerRadius)
 												.innerRadius(innerRadius);
-												
+															
 								var pie = d3.layout.pie()
 											.sort(null)
-											.value(function(d) {return d.hours;});
+											.value(function(d) {
+												var hrs = "";
+												
+												d.values.forEach(function(h) {
+													var sum = d3.sum(d.values, function(x) {return x.hours;});
+													hrs = sum;
+												})
+												return hrs;
+											});								
 								
-								
-								d3.select("div.content div")
+								d3.select("div.pie-chart")
 									.remove();
 									
 								d3.select("div.content")
 									.append("div")
 									.attr("class", "pie-chart");
-									
+																
+								
+								//display text
+						/*		d3.select("div.pie-chart")
+									.append("ul")
+									.selectAll("li")
+									.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
+									.enter()
+									.append("li")
+									.text(function(d) {return d.key;})
+									.append("li")
+									.text(function(d) {
+										
+										var hrs = "";
+										
+										d.values.forEach(function(h) {
+											var sum = d3.sum(d.values, function(x) {return x.hours;});
+											
+											hrs = sum;
+										})
+										return hrs;
+									});
+						*/		
+								//draw the pie chart								
 								var svg = d3.select("div.pie-chart")
 											.append("svg")
 											.attr("width", w)
@@ -124,7 +164,7 @@
 											.attr("transform", "translate(" + outerRadius + "," + outerRadius + ")");
 											  
 								var g = svg.selectAll(".arc")
-											.data(pie(nested_data[dropdownIndex].values[dropdownIndex2].values))
+											.data(pie(nested_data2[dropdownIndex].values[dropdownIndex2].values))
 											.enter()
 											.append("g")
 											.attr("class", "arc");
@@ -135,7 +175,7 @@
 									.style("z-index", "10")
 									.style("visibility", "hidden")
 									.data(nested_data[dropdownIndex].values[dropdownIndex2].values)
-									.text(function(d) {return "Client: " +d.client;});
+									.text(function(d) {return "Client: " +d.key;});
 								
 								g.append("path")
 									.attr("d", arc)
@@ -149,10 +189,13 @@
 								g.append("text")
 									.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"; })
 									.attr("text-anchor", "middle")
-									.data(nested_data[dropdownIndex].values[dropdownIndex2].values)
-									.text(function(d) {return d.hours;});
-								
-							});
+									.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
+									.text(function(d) {return d.key;});
+							
+							})
+							.transition()
+							.duration(1000)
+							.delay(100); 
 						
 					});
 
