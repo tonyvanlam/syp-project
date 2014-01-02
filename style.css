@@ -48,3 +48,16 @@ li {
         margin:0 0 15px;
         padding:0;
 }
+
+div.tooltip {
+  position: absolute;
+  text-align: left;
+  width: 100px;
+  height: 60px;
+  padding: 8px;
+  font: 14px sans-serif;
+  background: #ddd;
+  border: solid 1px #aaa;
+  border-radius: 8px;
+  pointer-events: none;
+}
