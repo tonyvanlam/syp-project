@@ -1,0 +1,271 @@
+kitchenApp.directive('visualization', function () {
+
+  // constants
+  //var margin = 20,
+  // width = 960,
+  // height = 500 - .5 - margin,
+  // color = d3.interpolateRgb("#f77", "#77f");
+
+
+  return {
+    restrict: 'E',
+    scope: {
+      val: '=',
+      grouped: '='
+    },
+    link: function (scope, element, attrs) {
+
+
+    	//Load a csv file and generate a tree of data.
+		d3.csv("csv/timedata.csv", function(csv) {
+
+		var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
+		
+		//Populate a csv object from csv file
+		var nested_data = d3.nest()
+			.key(function(d) {return d.deptName;})
+				.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+			.key(function(d) {return d.employee;})
+				.sortKeys(d3.ascending)
+			.entries(csv);
+
+		//Populate a csv object from csv file (for pie chart)	
+		var nested_data2 = d3.nest()
+			.key(function(d) {return d.deptName;})
+				.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+			.key(function(d) {return d.employee;})
+				.sortKeys(d3.ascending)
+			.key(function(d) {return d.client;})
+				.sortKeys(d3.ascending)
+			.entries(csv);					
+
+		//Create a header/label for a dropdown menu inside main content div.
+		d3.select("div.table")
+			.append("h3")
+			.text("Please select a department");
+
+		//Create a dropdown menu and populate with departments from csv object inside main content div.
+		d3.select("div.table")
+			.append("select")
+			.attr("class", "department")
+			.selectAll("option")
+			.data(nested_data)
+			.enter()
+			.append("option")
+			.text(function(d, i) {return d.key;});
+
+
+		//Trigger: On change of dropdown selection, load corresponding data
+		d3.select("select.department")
+		    .on("change", function() {
+
+		    	//variable that stores the index of the dropdown option selected 
+		    	var dropdownIndex = this.selectedIndex;
+
+			    //removes previous divs to clear previously displayed information selection inside main content div
+			    d3.select("div.table div")
+			    	.remove();
+			    d3.select("h3.employee")
+			    	.remove();
+			    d3.select("select.employee")
+			    	.remove();
+			    d3.select("div.pie-chart")
+			    	.remove();
+
+				//creates a div to store listed data inside main content div
+			    d3.select("div.table")
+					.append("div");
+					
+				//Create a header/label for the employee dropdown menu inside main content div.
+				d3.select("div.pie")
+					.append("h3")
+					.attr("class", "employee")
+					.text("Please select an employee");
+				
+				//Create a dropdown menu for populate with employee names based on department selection
+				d3.select("div.pie")
+					.append("select")
+					.attr("class", "employee")
+					.selectAll("option")
+					.data(nested_data2[dropdownIndex].values)
+					.enter()
+					.append("option")
+					.text(function(d, i) {return d.key;});						
+
+				var table = d3.select("div.table div").append("table"),
+				thead = table.append("thead"),
+				tbody = table.append("tbody");
+
+				//create table header and labels
+				var columns = ["Employee", "Hours", "Utilization"];
+				
+					thead.append("tr")
+					.selectAll("th")
+					.data(columns)
+					.enter()
+					.append("th")
+					.text(function(d) {return d;});
+
+				//creates an unordered list and populates it with members of each department inside main content div
+					tbody.selectAll("tr")
+					.data(nested_data[dropdownIndex].values) //the scope of the data that .enter() traverses 
+					.enter()
+					.append("tr")
+					.attr("class", "id")
+					.append("td")
+					.attr("class", "employee")
+					.text(function(d) {return d.key;});
+					
+				//hours column
+					d3.select("tbody")
+						.selectAll("tr")
+						.data(nested_data[dropdownIndex].values)
+						.append("td")
+						.attr("class", "stat")
+						.text(function(d) {
+							
+							d.values.forEach(function(h) {
+								var sum = d3.sum(d.values, function(x) {return x.hours;});
+								hrs = sum;
+							})
+							return hrs;
+						})
+				//utiliztion column
+					d3.select("tbody")
+						.selectAll("tr")
+						.data(nested_data[dropdownIndex].values)
+						.append("td")
+						.attr("class", "stat")
+						.text(function(d) {
+																
+							d.values.forEach(function(h) {
+								
+								if(h.billable == "TRUE") {
+									h.billable_hrs = h.hours;
+								}
+								
+								var sum = d3.sum(d.values, function(x) {return x.billable_hrs;});
+								var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+								
+								utlz = Math.round(sum/bsl*100)+"%";
+								
+								console.log(nested_data);
+								
+								})
+							return utlz;
+						});
+				
+				//Trigger: on selection, draw pie chart
+				d3.select("select.employee")
+					.on("change", function() {
+					
+						var dropdownIndex2 = this.selectedIndex;
+						
+						var w = 525,
+							h = 525,
+							r = Math.min(w, h) / 2;
+
+
+						
+
+						var color = d3.scale.category20();
+						
+						var pie = d3.layout.pie()
+									.value(function(d) {
+										var hrs = "";
+										
+										d.values.forEach(function(h) {
+											var sum = d3.sum(d.values, function(x) {return x.hours;});
+											hrs = sum;
+										})
+										return hrs;
+									})							
+									.sort(null);
+						
+						var arc = d3.svg.arc()
+										.outerRadius(r - 20)
+										.innerRadius(r - 150);
+
+						d3.select("div.pie-chart")
+							.remove();
+														
+						d3.select("div.pie")
+							.append("div")
+							.attr("class", "pie-chart");		
+
+						var svg = d3.select("div.pie-chart")
+									.append("svg")
+									.attr("width", w)
+									.attr("height", h)
+									.append("g")
+									.attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+
+						var path = svg.selectAll("path");
+									  
+						var g = svg.selectAll(".arc")
+									.data(pie(nested_data2[dropdownIndex].values[dropdownIndex2].values))
+									.enter()
+									.append("g")
+									.attr("class", "arc");
+						
+
+						
+
+
+						//tooltip div														
+						var tooltip = d3.select("div")
+							.append("div")
+							.attr("class", "tooltip")
+							.style("position", "absolute")
+							.style("z-index", "10")
+							.style("visibility", "hidden")
+							.text(function(d) {return d;});
+						
+
+						g.append("path")
+							.attr("d", arc)
+							.style("fill", function(d, i) {
+								return color(i);
+							})
+							//Trigger to display tooltip div
+							.on("mouseover", function() {return tooltip.style("visibility", "visible");})
+							.on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+							.on("mouseout", function() {return tooltip.style("visibility", "hidden");});
+						
+						g.selectAll("path")
+							.transition()
+							.ease("elastic")
+							.duration(750)
+							.delay(100);
+						
+						//pie chart data labels
+						g.append("text")
+							.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"; })
+							.attr("text-anchor", "left")
+							.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
+							.attr("value", function(d) {return d.key;})
+							.text(function(d) {
+										
+										d.values.forEach(function(h) {
+											var sum = d3.sum(d.values, function(x) {return x.hours;});
+											hrs = sum;
+										})
+										return hrs;
+									});
+					}); 
+						
+			});
+
+
+
+	});
+
+      
+      }
+  }
+});
+
+
+
+
+	
