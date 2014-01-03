@@ -14,13 +14,45 @@ body {
 
 div.content{
         font-family:'Varela Round', sans-serif;
-        width:550px;
-        margin:50px auto;
-        padding:30px;
-        background:#ffffff;
+        width:980px;
+        margin:20px auto;
+        padding:15px;
         -webkit-border-radius: 25px;
         border-radius: 25px;
         color:#514154;
+}
+
+div.table{
+	    font-family:'Varela Round', sans-serif;
+        width:395px;
+        margin:25px auto;
+        padding:15px;
+        background:#ffffff;
+        -webkit-border-radius: 25px;
+        border-radius: 20px;
+        color:#514154;
+        float: left;
+}
+
+td.employee{
+	width: 185px;
+}
+
+td.stat{
+	width: 80px;
+	text-align: right;
+}
+
+div.pie{
+        font-family:'Varela Round', sans-serif;
+        width:500px;
+        margin:25px auto;
+        padding:15px;
+        background:#ffffff;
+        -webkit-border-radius: 25px;
+        border-radius: 20px;
+        color:#514154;
+        float: right;
 }
 
 h3 {
@@ -60,4 +92,8 @@ div.tooltip {
   border: solid 1px #aaa;
   border-radius: 8px;
   pointer-events: none;
+}
+
+select.employee{
+	width: 155px;
 }
