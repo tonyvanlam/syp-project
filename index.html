@@ -46,6 +46,10 @@
 					.key(function(d) {return d.client;})
 						.sortKeys(d3.ascending)
 					.entries(csv);					
+					
+				console.log(nested_data2);
+				
+				var totalhours = "";
 
 				//Create a header/label for a dropdown menu inside main content div.
 				d3.select("div.table")
@@ -120,6 +124,8 @@
 							.enter()
 							.append("tr")
 							.attr("class", "id")
+							.on("mouseover", function(){d3.select(this).style("background-color", "#e4e4e4");})
+							.on("mouseout", function(){d3.select(this).style("background-color", "white");})
 							.append("td")
 							.attr("class", "employee")
 							.text(function(d) {return d.key;});
@@ -162,11 +168,12 @@
 										})
 									return utlz;
 								});
+							
 						
 						//Trigger: on selection, draw pie chart
 						d3.select("select.employee")
 							.on("change", function() {
-							
+								
 								var dropdownIndex2 = this.selectedIndex;
 								
 								var w = 525,
@@ -177,13 +184,10 @@
 								
 								var pie = d3.layout.pie()
 											.value(function(d) {
-												var hrs = "";
 												
-												d.values.forEach(function(h) {
-													var sum = d3.sum(d.values, function(x) {return x.hours;});
-													hrs = sum;
-												})
-												return hrs;
+												var hours = d3.sum(d.values, function(x) {return x.hours;});
+												
+												return hours;
 											})							
 											.sort(null);
 								
@@ -219,25 +223,32 @@
 									.attr("class", "tooltip")
 									.style("position", "absolute")
 									.style("z-index", "10")
-									.style("visibility", "hidden")
-									.text(function(d) {return d;});
+									.style("visibility", "hidden");
 								
+var pathData = [];
 
 								g.append("path")
 									.attr("d", arc)
+									.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
+									.attr("client", function(d) {pathData.push(d); console.log(pathData); return d.key;})
 									.style("fill", function(d, i) {
 										return color(i);
-									})
+									});
 									//Trigger to display tooltip div
-									.on("mouseover", function() {return tooltip.style("visibility", "visible");})
-									.on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-									.on("mouseout", function() {return tooltip.style("visibility", "hidden");});
+//									.on("mouseover", function() {return tooltip.style("visibility", "visible").data(nested_data2[dropdownIndex].values[dropdownIndex2].values).text(function(d) {console.log(d.values); return d.key;});})
+//									.on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+//									.on("mouseout", function() {return tooltip.style("visibility", "hidden");});
 								
-								g.selectAll("path")
-									.transition()
-									.ease("elastic")
-									.duration(750)
-									.delay(100);
+pathData.shift();
+console.log(pathData);
+for(var j=0;j<pathData.length;j++){
+	console.log(pathData[j].key);
+	for(var k=0;k<pathData[j].values.length;k++){
+			console.log(pathData[j].values[k].p_category);
+
+	}
+}								
+								
 								
 								//pie chart data labels
 								g.append("text")
@@ -245,14 +256,13 @@
 									.attr("text-anchor", "left")
 									.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
 									.attr("value", function(d) {return d.key;})
-									.text(function(d) {
-												
-												d.values.forEach(function(h) {
-													var sum = d3.sum(d.values, function(x) {return x.hours;});
-													hrs = sum;
-												})
-												return hrs;
-											});
+									.text(function(d) {return d.key;});
+									
+									
+									//			var hours = d3.sum(d.values, function(x) {return x.hours;});
+									//												
+									//			return hours;
+									//		});
 							}); 
 								
 					});
