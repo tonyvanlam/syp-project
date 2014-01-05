@@ -1,0 +1,314 @@
+<HTML>
+	<HEAD>
+
+		<!-- added style sheets 1) Google Web Font Varela Round. 2) Basic styles for content display --> 
+		<link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>	
+		<link href='style2.css' rel='stylesheet' type='text/css'>	
+
+		<TITLE>Kitchen</TITLE>
+	</HEAD>
+
+	<BODY>
+
+		<!-- added a main div to place generated content in for easier styling -->
+		<div id="main" class="content">
+			<div id="left" class="table1"></div>
+			<div id="center", class="table2"></div>
+			<div id="right", class="pie"></div>
+			
+		</div>
+
+		<!-- jQuery Library (Not needed yet but maybe useful -->
+		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
+
+		<script TYPE="TEXT/JAVASCRIPT" SRC="http://d3js.org/d3.v3.min.js"></script>
+		
+		<script>
+
+			//Load a csv file and generate a tree of data.
+			d3.csv("timedata.csv", function(csv) {
+			
+				var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
+				
+				//Populate a csv object from csv file
+				var nested_data = d3.nest()
+					.key(function(d) {return d.deptName;})
+						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+				//	.key(function(d) {return d.client;})
+				//		.sortKeys(d3.ascending)
+					.entries(csv);
+					
+				var nested_data1 = d3.nest()
+					.key(function(d) {return d.deptName;})
+						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+					.key(function(d) {return d.employee;})
+						.sortKeys(d3.ascending)
+					.entries(csv);
+					
+				//Populate a csv object from csv file (for pie chart)	
+				var nested_data2 = d3.nest()
+					.key(function(d) {return d.deptName;})
+						.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
+					.key(function(d) {return d.employee;})
+						.sortKeys(d3.ascending)
+					.key(function(d) {return d.client;})
+						.sortKeys(d3.ascending)
+					.entries(csv);					
+													
+				var columns1 = ["Department", "Targeted Utilization", "Actual Utilization"];
+				
+				//Create a dropdown menu and populate with departments from csv object inside main content div.
+				var table1 = d3.select("div.table1").append("table"),
+					thead = table1.append("thead")
+					tbody = table1.append("tbody").attr("class", "department");
+					
+				thead.append("tr")
+					.selectAll("th")
+					.data(columns1)
+					.enter()
+					.append("th")
+					.text(function(d) {return d;})
+					
+				tbody.selectAll("tr")
+					.data(nested_data)
+					.enter()
+					.append("tr").attr("class", "department")
+						.attr("name", function(d) {return d.key;})
+						.attr("id", function (d, i) {return i;})
+					.on("mouseover", function(){d3.select(this).style("background-color", "#e4e4e4");})
+					.on("mouseout", function(){d3.select(this).style("background-color", "white");})
+					.append("td").attr("class", "department")
+					.text(function(d) {return d.key;});
+										
+				d3.select("tbody.department")
+					.selectAll("tr.department")
+					.data(nested_data)
+					.append("td").attr("class", "stat")
+					.text(function(d) {
+							
+							var thours = d3.sum(d.values, function(x) {return x.target_hrs;});
+							var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+							
+							tutlz = Math.round(thours/bsl*100)+"%";
+							
+							return tutlz;
+					})
+					
+				d3.select("tbody.department")
+					.selectAll("tr.department")
+					.data(nested_data)
+					.append("td").attr("class", "stat")
+					.text(function(d) {
+																					
+						d.values.forEach(function(h) {
+							
+							if(h.billable == "TRUE") {
+								h.billable_hrs = h.hours;
+							}
+							
+							var sum = d3.sum(d.values, function(x) {return x.billable_hrs;});
+							var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+							
+							utlz = Math.round(sum/bsl*100)+"%";
+														
+							})
+						return utlz;
+					});
+
+				
+				d3.select("tbody")
+					.selectAll("tr.department")
+					.on("click", function() {
+						
+						var selectedDept = this.id;
+												
+						d3.select("div.table2 div")
+							.remove();
+							
+						d3.select("div.table2")
+							.append("div");
+						
+						var table2 = d3.select("div.table2 div").append("table"),
+							thead = table2.append("thead")
+							tbody = table2.append("tbody").attr("class", "employee");
+							
+						var columns2 = ["Employee", "Targeted Utilization", "Actual Utilization"];
+						
+						thead.append("tr")
+							.selectAll("th")
+							.data(columns2)
+							.enter()
+							.append("th")
+							.text(function(d) {return d;});
+						
+						tbody.selectAll("tr")
+							.data(nested_data1[selectedDept].values)
+							.enter()
+							.append("tr")
+								.attr("class", "employee")
+								.attr("id", function(d, i) {return i;})
+								.attr("name", function(d) {return d.key;})
+							.on("mouseover", function(){d3.select(this).style("background-color", "#e4e4e4");})
+							.on("mouseout", function(){d3.select(this).style("background-color", "white");})
+							.append("td").attr("class", "employee")
+							.text(function(d) {return d.key;});
+
+						d3.select("tbody.employee")
+							.selectAll("tr.employee")
+							.data(nested_data1[selectedDept].values)
+							.append("td").attr("class", "stat")
+							.text(function(d) {
+									
+									var thours = d3.sum(d.values, function(x) {return x.target_hrs;});
+									var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+									
+									tutlz = Math.round(thours/bsl*100)+"%";
+									
+									return tutlz;
+							})
+						
+						d3.select("tbody.employee")
+							.selectAll("tr.employee")
+							.data(nested_data1[selectedDept].values)
+							.append("td").attr("class", "stat")
+							.text(function(d) {
+																							
+								d.values.forEach(function(h) {
+									
+									if(h.billable == "TRUE") {
+										h.billable_hrs = h.hours;
+									}
+									
+									var sum = d3.sum(d.values, function(x) {return x.billable_hrs;});
+									var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+									
+									utlz = Math.round(sum/bsl*100)+"%";
+																
+									})
+								return utlz;
+							});
+						
+						d3.select("tbody.employee")
+							.selectAll("tr.employee")
+							.on("click", function() {
+								
+								var selectedEmp = this.id;
+								var employeeName = this.getAttribute("name");
+																
+								console.log(employeeName);
+																
+								var w = 525,
+									h = 525,
+									r = Math.min(w, h) / 2;
+
+								var color = d3.scale.category20();
+								
+								var pie = d3.layout.pie()
+											.value(function(d) {
+												
+												var hours = d3.sum(d.values, function(x) {return x.hours;});
+												
+												return hours;
+											})							
+											.sort(null);
+								
+								var arc = d3.svg.arc()
+												.outerRadius(r - 20)
+												.innerRadius(r - 150);
+
+								d3.select("div.pie-chart")
+									.remove();
+																
+								d3.select("div.pie")
+									.append("div").attr("class", "pie-chart");
+
+								d3.select("div.pie-chart")
+									.append("h3")
+									.text("Employee: "+employeeName);
+																			
+								var svg = d3.select("div.pie-chart")
+											.append("svg")
+											.attr("width", w)
+											.attr("height", h)
+											.append("g")
+											.attr("transform", "translate(" + w / 2 + "," + h / 2 + ")");
+
+								var path = svg.selectAll("path");
+											  
+								var g = svg.selectAll(".arc")
+											.data(pie(nested_data2[selectedDept].values[selectedEmp].values))
+											.enter()
+											.append("g")
+											.attr("class", "arc");
+								
+								//tooltip div														
+								var tooltip = d3.select("g.arc")
+									.append("div")
+									.attr("class", "tooltip")
+									.style("position", "absolute")
+									.style("z-index", "10")
+									.style("visibility", "hidden")
+									.text("Client: "+this.getAttribute("name"));
+								
+
+																										
+								g.append("path")
+									.attr("d", arc)
+									.data(nested_data2[selectedDept].values[selectedEmp].values)
+									.attr("client", function(d) {return d.key;})
+									.style("fill", function(d, i) {
+										return color(i);
+									})
+									//Trigger to display tooltip div
+									.on("mouseover", function() {return tooltip.style("visibility", "visible");})
+                                    .on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
+	                                .on("mouseout", function() {return tooltip.style("visibility", "hidden");});
+
+								g.append("text")
+									.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"; })
+									.attr("text-anchor", "left")
+									.data(nested_data2[selectedDept].values[selectedEmp].values)
+									.attr("value", function(d) {return d.key;})
+									.text(function(d) {return d.key;});
+																	
+							});
+						
+					});
+								 					
+	/*
+									
+
+								
+
+								
+var pathData = [];
+
+								
+pathData.shift();
+console.log(pathData);
+for(var j=0;j<pathData.length;j++){
+	console.log(pathData[j].key);
+	for(var k=0;k<pathData[j].values.length;k++){
+			console.log(pathData[j].values[k].p_category);
+
+	}
+}								
+								
+								
+								//pie chart data labels
+
+									
+									
+									//			var hours = d3.sum(d.values, function(x) {return x.hours;});
+									//												
+									//			return hours;
+									//		});
+							}); 
+								
+					});
+					*/
+			});
+				
+		</script>
+	</BODY>
+</HTML>
