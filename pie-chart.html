@@ -46,7 +46,7 @@
 					.entries(csv);
 					
 				//Display csv object in developer console.
-				console.log(nested_data2);
+				//console.log(nested_data2);
 
 				//Create a header/label for the department dropdown menu inside main content div.
 				d3.select("div.content")
@@ -168,7 +168,9 @@
 									.data(nested_data2[dropdownIndex].values[dropdownIndex2].values)
 									.attr("value", function(d) {return d.key;})
 									.text(function(d) {
-												var hrs = "";
+												var totalhours = "";
+												
+												console.log(totalhours);
 												
 												d.values.forEach(function(h) {
 													var sum = d3.sum(d.values, function(x) {return x.hours;});
