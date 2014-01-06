@@ -14,8 +14,10 @@
 		<div id="main" class="content">
 			<div id="left" class="table1"></div>
 			<div id="center", class="table2"></div>
-			<div id="right", class="pie"></div>
-			
+			<div id="right", class="pie"></div>		
+		</div>
+		<div id="main2" class="content">
+			<div id = "bottom", class="bar"></div>
 		</div>
 
 		<!-- jQuery Library (Not needed yet but maybe useful -->
@@ -27,7 +29,7 @@
 
 			//Load a csv file and generate a tree of data.
 			d3.csv("timedata.csv", function(csv) {
-			
+				
 				var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
 				
 				//Populate a csv object from csv file
@@ -194,11 +196,9 @@
 								
 								var selectedEmp = this.id;
 								var employeeName = this.getAttribute("name");
-																
-								console.log(employeeName);
-																
-								var w = 525,
-									h = 525,
+																														
+								var w = 425,
+									h = 425,
 									r = Math.min(w, h) / 2;
 
 								var color = d3.scale.category20();
@@ -241,26 +241,45 @@
 											.append("g")
 											.attr("class", "arc");
 								
+							//	console.log(pie(nested_data2[selectedDept].values[selectedEmp].values));
+								
 								//tooltip div														
-								var tooltip = d3.select("g.arc")
+								var tooltip = d3.select("div")
 									.append("div")
 									.attr("class", "tooltip")
 									.style("position", "absolute")
 									.style("z-index", "10")
 									.style("visibility", "hidden")
-									.text("Client: "+this.getAttribute("name"));
-								
-
-																										
+																																		
 								g.append("path")
 									.attr("d", arc)
 									.data(nested_data2[selectedDept].values[selectedEmp].values)
 									.attr("client", function(d) {return d.key;})
+									.attr("id", function(d, i) {return i;})
 									.style("fill", function(d, i) {
 										return color(i);
 									})
 									//Trigger to display tooltip div
-									.on("mouseover", function() {return tooltip.style("visibility", "visible");})
+									.on("mouseover", function() {
+											
+											var selectedClient = this.getAttribute("client");
+											var selectedClientId = this.id;
+											
+											var newArray = nested_data2[selectedDept].values[selectedEmp].values[selectedClientId].values;
+											
+											if(selectedClient == "SYP") {
+												var newdata = d3.nest()
+													.key(function(d) {return d.task;})
+														.sortKeys(d3.ascending)
+													.entries(newArray);
+											} else {
+												var newdata = d3.nest()
+													.key(function(d) {return d.project_name;})
+														.sortKeys(d3.ascending)
+													.entries(newArray);
+											}
+																							
+											return tooltip.style("visibility", "visible").data(newdata).text(function(d) {return d.key;});})
                                     .on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
 	                                .on("mouseout", function() {return tooltip.style("visibility", "hidden");});
 
@@ -270,43 +289,63 @@
 									.data(nested_data2[selectedDept].values[selectedEmp].values)
 									.attr("value", function(d) {return d.key;})
 									.text(function(d) {return d.key;});
-																	
+									
+								d3.selectAll("path")
+									.on("click", function(d) {
+									
+										var selectedClient = this.getAttribute("client")								
+										var selectedClientId = this.id;
+										
+										console.log(selectedClient);
+																			
+										var newArray = nested_data2[selectedDept].values[selectedEmp].values[selectedClientId].values;
+										
+										if(selectedClient == "SYP") {
+											var newdata = d3.nest()
+												.key(function(d) {return d.task;})
+													.sortKeys(d3.ascending)
+												.entries(newArray);
+										} else {
+											var newdata = d3.nest()
+												.key(function(d) {return d.project_name;})
+													.sortKeys(d3.ascending)
+												.entries(newArray);
+										}
+										
+										console.log(newdata);
+										
+						/*				var margin = {top: 20, right: 20, bottom: 30, left: 40},
+											width = 960 - margin.left - margin.right,
+											height = 500 - margin.top - margin.bottom;
+											
+										var x = d3.scale.ordinal()
+											.rangeRoundBands([0, width], .1);
+										
+										var y = d3.scale.linear()
+											.range([height], 0);
+											
+										var xAxis = d3.svg.axis()
+											.scale(x)
+											.orient("bottom");
+										
+										var xAxis = d3.svg.axis()
+											.scale(y)
+											.orient("left")
+											.ticks(10, "%");
+							*/																			
+									
+									});  	 
+
 							});
 						
 					});
 								 					
-	/*
+	
 									
 
 								
 
-								
-var pathData = [];
-
-								
-pathData.shift();
-console.log(pathData);
-for(var j=0;j<pathData.length;j++){
-	console.log(pathData[j].key);
-	for(var k=0;k<pathData[j].values.length;k++){
-			console.log(pathData[j].values[k].p_category);
-
-	}
-}								
-								
-								
-								//pie chart data labels
-
-									
-									
-									//			var hours = d3.sum(d.values, function(x) {return x.hours;});
-									//												
-									//			return hours;
-									//		});
-							}); 
-								
-					});
-					*/
+				
 			});
 				
 		</script>

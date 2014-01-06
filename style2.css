@@ -14,7 +14,8 @@ body {
 
 div.content{
         font-family:'Varela Round', sans-serif;
-        width:1500px;
+        width:1126px;
+        height: 500px;
         margin:20px auto;
         padding:15px;
         -webkit-border-radius: 25px;
@@ -24,7 +25,7 @@ div.content{
 
 div.table1{
 	    font-family:'Varela Round', sans-serif;
-        width:395px;
+        width:255px;
         margin:25px auto;
         margin-right: 15px;
         padding:15px;
@@ -37,7 +38,7 @@ div.table1{
 
 div.table2{
 	    font-family:'Varela Round', sans-serif;
-        width:395px;
+        width:310px;
         margin:25px auto;
         margin-right: 15px;
         padding:15px;
@@ -48,7 +49,14 @@ div.table2{
         float: left;
 }
 
+th {
+	font-size: 14px;
+	font-family:'Varela Round', sans-serif;
+    font-weight: normal;	
+}
+
 td.department {
+	font-size: 12px;
 	width: 120px;
 	padding: 5px;
 	padding-top: 2px;
@@ -56,13 +64,15 @@ td.department {
 }
 
 td.employee{
-	width: 185px;
+	font-size: 12px;
+	width: 160px;
 	padding: 5px;
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
 
 td.stat{
+	font-size: 12px;
 	width: 75px;
 	text-align: right;
 	padding: 2px;
@@ -71,54 +81,66 @@ td.stat{
 }
 
 div.pie{
-        font-family:'Varela Round', sans-serif;
-        width:540px;
-        margin:25px auto;
-        padding:15px;
-        background:#ffffff;
-        -webkit-border-radius: 25px;
-        border-radius: 20px;
-        color:#514154;
-        float: left;
+    font-family:'Varela Round', sans-serif;
+    width:440px;
+    margin:25px auto;
+    padding:15px;
+    background:#ffffff;
+    -webkit-border-radius: 25px;
+    border-radius: 20px;
+    color:#514154;
+    float: left;	
+}
+
+div.bar{
+    font-family:'Varela Round', sans-serif;
+    width:440px;
+    margin:25px auto;
+    padding:15px;
+    background:#ffffff;
+    -webkit-border-radius: 25px;
+    border-radius: 20px;
+    color:#514154;
+    float: right;
 }
 
 h3 {
-        font-size:17px;
-        font-weight: normal;
-        margin: 0 0 5px;
-        padding:0 ;
+    font-size:14px;
+    font-weight: normal;
+    margin: 0 0 5px;
+    padding:0 ;
 }
 
 select{
-        margin-bottom: 15px;
+    margin-bottom: 15px;
 }
 
 ul {
-        margin:15px 0 0;
-        padding:0;
-        list-style: none;
-        font-size:14px;
-        -moz-column-count:1; /* Firefox */
-        -webkit-column-count:1; /* Safari and Chrome */
-        column-count:1;
+    margin:15px 0 0;
+    padding:0;
+    list-style: none;
+    font-size:14px;
+    -moz-column-count:1; /* Firefox */
+    -webkit-column-count:1; /* Safari and Chrome */
+    column-count:1;
 }
 
 li {
-        margin:0 0 15px;
-        padding:0;
+    margin:0 0 15px;
+    padding:0;
 }
 
 div.tooltip {
-  position: absolute;
-  text-align: left;
-  width: 100px;
-  height: 60px;
-  padding: 8px;
-  font: 14px sans-serif;
-  background: #ddd;
-  border: solid 1px #aaa;
-  border-radius: 8px;
-  pointer-events: none;
+	position: absolute;
+	text-align: left;
+	width: 300px;
+	height: 200px;
+	padding: 8px;
+	font: 14px sans-serif;
+	background: #ddd;
+	border: solid 1px #aaa;
+	border-radius: 8px;
+	pointer-events: none;
 }
 
 select.employee{
