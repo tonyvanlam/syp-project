@@ -218,9 +218,13 @@
 
 								d3.select("div.pie-chart")
 									.remove();
+								
+								d3.select("div.tooltip")
+									.remove();
 																
 								d3.select("div.pie")
 									.append("div").attr("class", "pie-chart");
+								
 
 								d3.select("div.pie-chart")
 									.append("h3")
