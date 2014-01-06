@@ -126,7 +126,7 @@ ul {
 }
 
 li {
-    margin:0 0 15px;
+    margin:0 0 5px;
     padding:0;
 }
 
@@ -134,7 +134,7 @@ div.tooltip {
 	position: absolute;
 	text-align: left;
 	width: 300px;
-	height: 200px;
+	height: 400px;
 	padding: 8px;
 	font: 14px sans-serif;
 	background: #ddd;

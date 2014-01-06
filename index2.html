@@ -278,10 +278,31 @@
 														.sortKeys(d3.ascending)
 													.entries(newArray);
 											}
-																							
-											return tooltip.style("visibility", "visible").data(newdata).text(function(d) {return d.key;});})
+											
+											var tooltiptext = d3.select("div.tooltip")
+																.append("div")
+																.append("ul")
+																.append("li")
+																.selectAll("li")
+																.data(newdata)
+																.enter()
+																.append("li")
+																.text(function(d) {
+																	
+																	var hours = d3.sum(d.values, function(x) {return x.hours;});
+																	
+																	return d.key+": "+hours+" hrs";});
+											
+											console.log(tooltiptext);					
+																																							
+											return tooltip.style("visibility", "visible")+tooltiptext;})
                                     .on("mousemove", function() {return tooltip.style("top", (event.pageY-10)+"px").style("left",(event.pageX+10)+"px");})
-	                                .on("mouseout", function() {return tooltip.style("visibility", "hidden");});
+	                                .on("mouseout", function() {
+	                                	
+	                                	var remove = d3.select("div.tooltip div")
+	                                					.remove();
+	                                	
+	                                	return tooltip.style("visibility", "hidden")+remove;});
 
 								g.append("text")
 									.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"; })
@@ -313,6 +334,18 @@
 										}
 										
 										console.log(newdata);
+										
+										d3.select("div.bar")
+											.append("div");
+											
+										d3.select("div.bar div")
+											.append("ul")
+											.append("li")
+											.selectAll("li")
+											.data(newdata)
+											.enter()
+											.append("li")
+											.text(function(d) {return d.key;});
 										
 						/*				var margin = {top: 20, right: 20, bottom: 30, left: 40},
 											width = 960 - margin.left - margin.right,
