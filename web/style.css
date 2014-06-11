@@ -14,12 +14,12 @@ body {
 
 div.content{
         font-family:'Varela Round', sans-serif;
-        width:1126px;
+        width:1238px;
         height: 500px;
-        margin:20px auto;
+        margin:12px auto;
         padding:15px;
-        -webkit-border-radius: 25px;
-        border-radius: 25px;
+        -webkit-border-radius: 15px;
+        border-radius: 15px;
         color:#514154;
 }
 
@@ -82,7 +82,7 @@ td.stat{
 
 div.pie{
     font-family:'Varela Round', sans-serif;
-    width:440px;
+    width:550px;
     margin:25px auto;
     padding:15px;
     background:#ffffff;
@@ -115,8 +115,12 @@ select{
     margin-bottom: 15px;
 }
 
+form{
+	margin-bottom: 10px;
+}
+
 ul {
-    margin:15px 0 0;
+    margin: 0px 0 0;
     padding:0;
     list-style: none;
     font-size:12px;
@@ -133,11 +137,10 @@ li {
 div.tooltip {
 	position: absolute;
 	text-align: left;
-	width: 250px;
-	height: 400px;
 	padding: 8px;
 	font: 14px sans-serif;
 	background: #ddd;
+/*	border: solid 1px #aaa; */
 	border: solid 1px #aaa;
 	border-radius: 8px;
 	pointer-events: none;
@@ -145,4 +148,24 @@ div.tooltip {
 
 select.employee{
 	width: 155px;
+}
+
+.axis {
+    font-family:'Varela Round', sans-serif;
+    font-size: 11px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.highlight {
+	background-color: black;
 }

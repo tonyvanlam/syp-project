@@ -16,9 +16,7 @@
 			<div id="center", class="table2"></div>
 			<div id="right", class="pie"></div>		
 		</div>
-		<div id="main2" class="content">
-			<div id = "bottom", class="bar"></div>
-		</div>
+
 
 		<!-- jQuery Library (Not needed yet but maybe useful -->
 		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
@@ -310,12 +308,13 @@
 
 								g.append("text")
 									.attr("transform", function(d) {return "translate(" + arc.centroid(d) + ")"; })
-									.attr("text-anchor", "left")
+									.attr("text-anchor", "center")
+									.attr("font-size", "12px")
 									.data(nested_data2[selectedDept].values[selectedEmp].values)
 									.attr("value", function(d) {return d.key;})
 									.text(function(d) {return d.key;});
 									
-								d3.selectAll("path")
+	/*							d3.selectAll("path")
 									.on("click", function(d) {
 									
 										var selectedClient = this.getAttribute("client")								
@@ -351,7 +350,7 @@
 											.append("li")
 											.text(function(d) {return d.key;});
 										
-						/*				var margin = {top: 20, right: 20, bottom: 30, left: 40},
+										var margin = {top: 20, right: 20, bottom: 30, left: 40},
 											width = 960 - margin.left - margin.right,
 											height = 500 - margin.top - margin.bottom;
 											
@@ -369,10 +368,10 @@
 											.scale(y)
 											.orient("left")
 											.ticks(10, "%");
-							*/																			
+																										
 									
 									});  	 
-
+							*/
 							});
 						
 					});
