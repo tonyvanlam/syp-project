@@ -76,6 +76,9 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 		.selectAll("tr.department")
 		.on("click", function() {
 			
+			d3.selectAll("tr.department").attr("class", "department");
+			d3.select(this).attr("class", "department highlight");
+			
 			var DeptselectionArray = nested_data[this.id].values;
 									
 			var employeeArray = d3.nest()
@@ -95,19 +98,17 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 				thead = table2.append("thead")
 				tbody = table2.append("tbody").attr("class", "employee");
 				
-			var columns2 = ["Employee", "Targeted Utilization", "Actual Utilization"];
+			var columns2 = ["Employee", "Targeted Utilization", "Actual Utilization", "Capacity"];
 			
 			thead.append("tr")
 				.selectAll("th")
 				.data(columns2)
 				.enter()
 				.append("th")
-			//	.style("opacity", 0)
-			//	.transition().style("opacity", 1).duration(450)
 				.text(function(d) {return d;});
 			
 			tbody.selectAll("tr")
-				.data(employeeArray)
+				.data(employeeArray)	
 				.enter()
 				.append("tr")
 					.attr("class", "employee")
@@ -116,10 +117,9 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 				.on("mouseover", function(){d3.select(this).style("background-color", "#e4e4e4");})
 				.on("mouseout", function(){d3.select(this).style("background-color", "white");})
 				.append("td").attr("class", "employee")
-			//	.style("opacity", 0)
-			//	.transition().style("opacity", 1).delay(50).duration(450)
 				.text(function(d) {return d.key;});
 
+			//calculate "Target Utilization"
 			d3.select("tbody.employee")
 				.selectAll("tr.employee")
 				.data(employeeArray)
@@ -137,8 +137,10 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 						tutlz = Math.round(thours/bsl*100)+"%";
 						
 						return tutlz;
-				})
+				});
 			
+			
+			//calculate "Actual Utilization"
 			d3.select("tbody.employee")
 				.selectAll("tr.employee")
 				.data(employeeArray)
@@ -165,9 +167,36 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 					return utlz;
 				});
 			
+			//calculate "Capacity"
+			d3.select("tbody.employee")
+				.selectAll("tr.employee")
+				.data(employeeArray)
+				.append("td").attr("class", "stat")
+				.style("opacity", 0)
+				.transition().each(function(d, i) {
+					d3.selectAll("td").transition()
+						.style("opacity", 1).delay(10*i).duration(450).ease("linear")
+					})									
+				.text(function(d) {
+																				
+					d.values.forEach(function(h) {
+						
+						var sum = d3.sum(d.values, function(x) {return x.hours;});
+						var bsl = d3.sum(d.values, function(x) {return x.baseline_hrs;});
+						
+						utlz = Math.round(sum/bsl*100)+"%";
+													
+						})
+					return utlz;
+				});
+			
+			
 			d3.select("tbody.employee")
 				.selectAll("tr.employee")
 				.on("click", function() {
+				
+					d3.selectAll("tr.employee").attr("class", "employee");
+					d3.select(this).attr("class", "employee highlight");
 				
 					var empSelectionArray = employeeArray[this.id].values;
 																			
@@ -235,23 +264,48 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 					
 					var form = d3.select("div.pie-chart").append("form")
 					
-					var labelEnter = form.selectAll("ul")
-						.data(radioInputs)
-						.enter().append("ul")								
+			//		var labelEnter = form.selectAll("ul")
+			//			.data(radioInputs)
+			//			.enter().append("ul")								
+			
 					
-					labelEnter.append("input")
-						.attr({
-							type: "radio",
-							class: "shape",
-							id: function(d, i) {return i;},
-							name: "graphtype",
-							value: function(d, i) {return i;}
-						})
-						.property("checked", function(d, i) {return (i===0);});
+			//		labelEnter.append("input")
+			//			.attr({
+			//				type: "radio",
+			//				class: "shape",
+			//				id: function(d, i) {return i;},
+			//				name: "graphtype",
+			//				value: function(d, i) {return i;}
+			//			})
+			//			.property("checked", function(d, i) {return (i===0);});
+			
+					d3.select("form").selectAll("label")
+						.data(radioInputs)
+							.enter()
+						.append("label")
+							.text(function(d) {return d;})
+						//	.attr("font-size", "9px")
+							.attr("class", "shape")
+							.attr("id", function(d, i) {
+								return "shape" + i;
+							})
+						.append("input")
+							.attr({
+								type: "radio",
+								class: "shape",
+								id: function(d, i) {return i;},
+								name: "graphtype",
+								value: function(d, i) {return i;}
+							})
+							.property("checked", function(d, i) {return (i===0);});
+							
+					d3.select("#shape0").attr("class", "shape highlight");
 						
-					labelEnter.append("label")
-						.text(function(d) {return d;})
-						.attr("font-size", "9px");
+						
+				//	labelEnter.append("label")
+				//		.text(function(d) {return d;})
+				//		.attr("font-size", "9px")
+				//		.attr("class", "shape");
 																
 					var svg = d3.select("div.pie-chart")
 								.append("svg")
@@ -391,8 +445,12 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 						
 							var selection = parseFloat(this.id);
 							
+							//redraw pie chart	
 							if(selection === 0) {
-																	
+								
+								d3.selectAll("label.shape").attr("class", "shape");
+								d3.select("#shape0").attr("class", "shape highlight");
+																									
 								d3.select("svg").transition().style("opacity", 0).duration(500).remove();
 								
 								var svg = d3.select("div.pie-chart")
@@ -510,8 +568,12 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 							d3.selectAll("text").transition().style("opacity", 1).delay(400).duration(700);
 							
 							}
+							
 							//draw bar graph
 							if(selection === 1) {
+							
+								d3.selectAll("label.shape").attr("class", "shape");
+								d3.select("#shape1").attr("class", "shape highlight");							
 							
 								d3.select("svg").transition()
 									.style("opacity", 0).duration(500).remove();
@@ -550,9 +612,9 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 							  	svg.append("g")
 								      .attr("class", "x axis")
 								      .attr("transform", "translate(0," + height + ")")
-								      .call(xAxis)
-								      .style("opacity", 0)
-								      .transition().style("opacity", 1).delay(400).duration(600);
+									  .call(xAxis)
+								// 	  .style("opacity", 0)
+								//    .transition().style("opacity", 1).delay(400).duration(600);
 								
 								svg.append("g")
 								      .attr("class", "y axis")
@@ -569,12 +631,19 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 								      .data(pieArray)
 								    .enter().append("rect")
 								    	.style("opacity", 0)
-
 								      .attr("class", "bar")
 								      .attr("client", function(d) {return d.key;})
 								      .attr("id", function(d, i) {return i;})
-								      .attr("x", function(d, i) {return x(d.key); })
-								      .attr("width", x.rangeBand())
+									  .attr("x", function(d, i) {
+								      		
+								      		console.log(d.key);
+								      		console.log(x(d.key));
+								      		
+								      		return x(d.key); 
+								      	
+								      	})	
+									  .attr("width", x.rangeBand())
+								//    .attr("width", 65)
 								      .attr("y", function(d) {
 								      	var hours = parseFloat(d3.sum(d.values, function(x) {return x.hours;}));
 								      	
@@ -645,7 +714,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 						});
 					
 				});
-			
+					
 		});
 
 });
