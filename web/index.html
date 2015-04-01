@@ -12,8 +12,17 @@
 
 		<!-- added a main div to place generated content in for easier styling -->
 		<div id="main" class="content">
-			<div id="left" class="table1"></div>
-			<div id="center", class="table2"></div>
+
+			<div id="left" class="table1">
+				<svg width="260" height="20" x="-100">
+					<image xlink:href="icons/expand50.svg" class="pop" height="22px" width="22px" x="240" y="-1"/>
+				</svg>
+			</div>
+			<div id="center", class="table2">
+				<svg width="360" height="20" x="-100">
+					<image xlink:href="icons/expand50.svg" class="pop2" height="22px" width="22px" x="340" y="-1" opacity="0"/>
+				</svg>
+			</div>
 			<div id="right", class="pie"></div>		
 		</div>
 
@@ -22,7 +31,7 @@
 		<!-- <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script> -->
 
 		<script type="text/javascript" src="lib/d3.v3.min.js"></script>
-		<script type="text/javascript" src="lib/jquery-1.11.0.min.js"></script>
+		<script type="text/javascript" src="lib/jquery-1.11.0.js"></script>
 		
 		<script type="text/javascript" src="js/highlight.js"></script>
 		<script type="text/javascript" src="js/utilization.js"> </script>

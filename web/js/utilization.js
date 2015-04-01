@@ -1,11 +1,11 @@
 //Load a csv file and generate a tree of data.
-d3.csv("timedata_04.2014.csv", function(csv) {
+d3.csv("timedata_ytd02.2015.csv", function(csv) {
 	
 	var dept_order = ['Strategy', 'Design', 'Project Mgmt', 'Production', 'Principal', 'Overhead', 'Finance', 'IT', 'Ops', 'SYP Way', 'Biz Dev', 'Products'];
 	
 	//Populate a csv object from csv file
 	var nested_data = d3.nest()
-		.key(function(d) {return d.deptName;})
+		.key(function(d) {return d.dept_name;})
 			.sortKeys(function(a,b) {return dept_order.indexOf(a) - dept_order.indexOf(b);})
 	//	.key(function(d) {return d.client;})
 	//		.sortKeys(d3.ascending)
@@ -35,7 +35,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 		.on("mouseout", function(){d3.select(this).style("background-color", "white");})
 		.append("td").attr("class", "department")
 		.text(function(d) {return d.key;});
-							
+
 	d3.select("tbody.department")
 		.selectAll("tr.department")
 		.data(nested_data)
@@ -85,6 +85,16 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 				.key(function(d) {return d.employee;})
 					.sortKeys(d3.ascending)
 				.entries(DeptselectionArray);
+			
+			d3.select(".pop2").on("click", function() {
+							
+				var sc = document.createElement('script');
+				sc.src = "js/deptdetails_barchart.js";
+				document.getElementsByTagName("body")[0].appendChild(sc);
+			
+			});
+			
+			d3.select(".pop2").style("opacity", 1);		
 																	
 			d3.select("div.table2 div")
 				.remove();
@@ -144,7 +154,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 			d3.select("tbody.employee")
 				.selectAll("tr.employee")
 				.data(employeeArray)
-				.append("td").attr("class", "stat")
+				.append("td").attr("class", "stat utlz")
 				.style("opacity", 0)
 				.transition().each(function(d, i) {
 					d3.selectAll("td").transition()
@@ -171,7 +181,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 			d3.select("tbody.employee")
 				.selectAll("tr.employee")
 				.data(employeeArray)
-				.append("td").attr("class", "stat")
+				.append("td").attr("class", "stat cap")
 				.style("opacity", 0)
 				.transition().each(function(d, i) {
 					d3.selectAll("td").transition()
@@ -309,6 +319,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 																
 					var svg = d3.select("div.pie-chart")
 								.append("svg")
+								.attr("class", "chart")
 								.attr("width", w)
 								.attr("height", h)
 								.append("g")
@@ -451,10 +462,11 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 								d3.selectAll("label.shape").attr("class", "shape");
 								d3.select("#shape0").attr("class", "shape highlight");
 																									
-								d3.select("svg").transition().style("opacity", 0).duration(500).remove();
+								d3.select("svg.chart").transition().style("opacity", 0).duration(500).remove();
 								
 								var svg = d3.select("div.pie-chart")
 											.append("svg")
+											.attr("class", "chart")
 											.attr("width", w)
 											.attr("height", h)
 											.append("g")
@@ -575,15 +587,17 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 								d3.selectAll("label.shape").attr("class", "shape");
 								d3.select("#shape1").attr("class", "shape highlight");							
 							
-								d3.select("svg").transition()
+								d3.select("svg.chart").transition()
 									.style("opacity", 0).duration(500).remove();
 									
 								var margin = {top: 12, right: 12, bottom: 20, left: 40},
 								    width = 550 - margin.left - margin.right,
 								    height = 450 - margin.top - margin.bottom;
-								
+
+								var max = d3.max(pieArray, function(d, i) {return parseFloat((i+1)*85 + 15);});
+
 								var x = d3.scale.ordinal()
-								    .rangeRoundBands([0, width], .1);
+								    .rangeRoundBands([0, max], 0.1);
 								
 								var y = d3.scale.linear()
 								    .range([height, 0]);
@@ -598,6 +612,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 								    .ticks(10);
 								
 								var svg = d3.select("div.pie-chart").append("svg")
+									.attr("class", "chart")
 								    .attr("width", width + margin.left + margin.right)
 								    .attr("height", height + margin.top + margin.bottom)
 									.append("g")
@@ -612,9 +627,7 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 							  	svg.append("g")
 								      .attr("class", "x axis")
 								      .attr("transform", "translate(0," + height + ")")
-									  .call(xAxis)
-								// 	  .style("opacity", 0)
-								//    .transition().style("opacity", 1).delay(400).duration(600);
+									  .call(xAxis);
 								
 								svg.append("g")
 								      .attr("class", "y axis")
@@ -634,16 +647,12 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 								      .attr("class", "bar")
 								      .attr("client", function(d) {return d.key;})
 								      .attr("id", function(d, i) {return i;})
+								//	  .attr("x", function(d, i) {return x(d.key);})	
 									  .attr("x", function(d, i) {
-								      		
-								      		console.log(d.key);
-								      		console.log(x(d.key));
-								      		
-								      		return x(d.key); 
-								      	
-								      	})	
-									  .attr("width", x.rangeBand())
-								//    .attr("width", 65)
+									  	return (i*85 + 15);
+									  })	
+								//	  .attr("width", x.rangeBand())
+									  .attr("width", 70)
 								      .attr("y", function(d) {
 								      	var hours = parseFloat(d3.sum(d.values, function(x) {return x.hours;}));
 								      	
@@ -716,5 +725,67 @@ d3.csv("timedata_04.2014.csv", function(csv) {
 				});
 					
 		});
+	
 
 });
+
+d3.select(".pop").on("click", function() {
+
+	//set up navigate options
+	var nav_location = ["All", "New York", "San Francisco"];
+	var nav_xaxisoptions = ["Capacity", "Function"];
+
+	d3.select("body").append("div").attr("class", "popup");
+	d3.select("body").append("div").attr("class", "invisible");
+	d3.select(".content").transition().duration(250).style("opacity", 0.2);
+
+	d3.select(".popup").append("div").attr("class", "close");
+	d3.select(".popup").append("div").attr("class", "nav");
+	d3.select(".popup").append("div").attr("class", "content2");
+
+	var nav = d3.select(".nav").append("div").attr("class", "location");
+	var nav2 = d3.select(".nav").append("div").attr("class", "xaxis")
+
+	d3.select("div.location").append("span").html("Location <br>");
+	d3.select("div.xaxis").append("span").html("x-Axis <br>");
+
+	var loc_sel = nav.append("select").attr("class", "location").attr("size", 3);
+	var xas_sel = nav2.append("select").attr("class", "xaxisoption").attr("size", 3);
+
+	loc_sel.selectAll("option")
+		.data(nav_location).enter()
+		.append("option")
+		.attr("value", function(d) {return d.toLowerCase().replace(/\s+/g, '');})
+		.text(function(d) {return d;});
+
+	xas_sel.selectAll("option")
+		.data(nav_xaxisoptions).enter()
+		.append("option")
+		.attr("value", function(d) {return d.toLowerCase().replace(/\s+/g, '');})
+		.text(function(d) {return d;});
+
+	var sc = document.createElement('script');
+	sc.src = "js/scatterplot.js";
+	document.getElementsByTagName("body")[0].appendChild(sc);
+
+	//close pop-up via close button, pressing ESC and clicking outside the div
+	d3.select(".close").on("click", function() {
+		d3.select(".popup").remove();
+		d3.select(".content").style("opacity", 1);
+	});
+
+	d3.select(".invisible").on("click", function() {
+		d3.select(".popup").remove();
+		d3.select(".invisible").remove();
+		d3.select(".content").style("opacity", 1);
+	});
+
+	d3.select("body").on("keydown", function() {
+		var keycode = d3.event.keyCode;
+		if(keycode === 27) {
+			d3.select(".popup").remove();
+			d3.select(".content").style("opacity", 1);
+		}
+	});
+});
+
